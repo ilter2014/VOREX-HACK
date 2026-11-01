@@ -1,16 +1,24 @@
 -- ==========================================
 -- DATADEV DİNAMİK YÖNLENDİRİCİ CONFIG
--- Oyun adında "FPS" geçen tüm oyunları kapsar.
+-- Buradan oyun isimlerini ve linkleri kolayca değiştirebilirsin.
 -- ==========================================
 local CONFIG = {
     {
-        TargetKeyword = "FPS", -- Oyun adında "FPS" geçiyorsa eşleşir
-        LoadUrl = "https://vorex-hack.vercel.app/single-tap-FPS.lua"
+        TargetKeyword = "[FPS] Tek Dokunma", -- Aranacak oyun adı
+        LoadUrl = "https://vorex-hack.vercel.app/single-tap-FPS.lua"    -- Yüklenecek script linki
+    },
+    {
+        TargetKeyword = "Sahte bir yumurta oluşturun", 
+        LoadUrl = "https://vorex-hack.vercel.app/createanegg.lua"      
+    },
+    {
+        TargetKeyword = "FIFA Süper Futbol",                        
+        LoadUrl = "https://vorex-hack.vercel.app/fifasuperfootball.lua" 
     }
-    -- İstersen buraya ileride başka genel kurallar da ekleyebilirsin.
+    -- Yeni oyunlar eklemek için buraya süslü parantez içinde virgülle ekleme yapabilirsin.
 }
 
-print("--- [DataDev] Genel FPS Oyun Algılama Sistemi Başlatıldı ---")
+print("--- [DataDev] Oyun Algılama Sistemi Başlatıldı ---")
 
 -- Oyuncunun oynadığı oyunun adını güvenli bir şekilde çekme
 local MarketplaceService = game:GetService("MarketplaceService")
@@ -26,13 +34,13 @@ print("Place ID: " .. tostring(game.PlaceId))
 local matched = false
 
 for _, data in ipairs(CONFIG) do
-    -- Oyun adının içinde "FPS" kelimesi geçiyorsa (büyük/küçük harf duyarsız)
+    -- Oyun adının içinde kelime geçiyorsa (büyük/küçük harf duyarsız arama için küçük harfe çevrilir)
     if gameName ~= "" and string.find(string.lower(gameName), string.lower(data.TargetKeyword)) then
         matched = true
         print("[+] Eşleşme Bulundu! Eşleşen Kural: " .. data.TargetKeyword)
         print("[+] Yükleniyor -> " .. data.LoadUrl)
         
-        -- Scripti çalıştırma
+        -- Mevcut scripti sonlandırıp (unload) yeni linki çalıştırma
         local loadSuccess, loadErr = pcall(function()
             local remoteScript = game:HttpGet(data.LoadUrl)
             loadstring(remoteScript)()
@@ -42,11 +50,11 @@ for _, data in ipairs(CONFIG) do
             warn("[-] Hedef script yüklenirken hata oluştu: " .. tostring(loadErr))
         end
         
-        break
+        break -- Eşleşme bulunduktan sonra döngüyü durdur
     end
 end
 
 if not matched then
-    print("[-] Bu oyunun adında 'FPS' kelimesi geçmiyor. İşlem sonlandırıldı.")
+    print("[-] Bu oyun için tanımlı bir kural eşleşmedi. İşlem sonlandırıldı.")
 end
 print("-------------------------------------------------------------")
