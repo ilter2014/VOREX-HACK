@@ -93,7 +93,7 @@ local function MainScript()
     speedTextBox.Position = UDim2.new(0, 0, 0, 45)
     speedTextBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     speedTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    speedTextBox.PlaceholderText = "Hiz Degeri (Max 75)"
+    speedTextBox.PlaceholderText = "Hiz Degeri (Max 50)"
     speedTextBox.Text = tostring(currentSpeed)
     speedTextBox.TextSize = 13
     speedTextBox.Font = Enum.Font.SourceSans
@@ -130,7 +130,7 @@ local function MainScript()
     speedTextBox.FocusLost:Connect(function()
         local v = tonumber(speedTextBox.Text)
         if v then
-            currentSpeed = math.clamp(v, 16, 75)
+            currentSpeed = math.clamp(v, 16, 50)
             speedTextBox.Text = tostring(currentSpeed)
             if isSpeedEnabled then
                 speedToggleButton.Text = "Speed Fly ("..currentSpeed.."): ON"
