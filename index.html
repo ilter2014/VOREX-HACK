@@ -1,0 +1,56 @@
+-- ==========================================
+-- DATADEV DİNAMİK YÖNLENDİRİCİ CONFIG
+-- Buradan oyun isimlerini ve linkleri kolayca değiştirebilirsin.
+-- ==========================================
+local CONFIG = {
+    {
+        TargetKeyword = "Sahte bir yumurta oluşturun", -- Aranacak oyun adı (veya bir kısmı)
+        LoadUrl = "https://ilter-hack.vercel.app/"     -- Yüklenecek script linki
+    },
+    {
+        TargetKeyword = "FIFA Süper Futbol",                       -- İkinci oyun adı
+        LoadUrl = "https://ilter-hack.vercel.app/oyun2" -- İkinci yüklenecek script linki
+    }
+    -- Yeni oyunlar eklemek için buraya süslü parantez içinde virgülle ekleme yapabilirsin.
+}
+
+print("--- [DataDev] Oyun Algılama Sistemi Başlatıldı ---")
+
+-- Oyuncunun oynadığı oyunun adını güvenli bir şekilde çekme
+local MarketplaceService = game:GetService("MarketplaceService")
+local success, gameInfo = pcall(function()
+    return MarketplaceService:GetProductInfo(game.PlaceId)
+end)
+
+local gameName = success and gameInfo.Name or ""
+print("Algılanan Oyun Adı: " .. (gameName ~= "" and gameName or "Bilinmiyor / Alınamadı"))
+print("Place ID: " .. tostring(game.PlaceId))
+
+-- Eşleşme Kontrolü ve Yönlendirme
+local matched = false
+
+for _, data in ipairs(CONFIG) do
+    -- Oyun adının içinde kelime geçiyorsa (büyük/küçük harf duyarsız arama için küçük harfe çevrilir)
+    if gameName ~= "" and string.find(string.lower(gameName), string.lower(data.TargetKeyword)) then
+        matched = true
+        print("[+] Eşleşme Bulundu! Eşleşen Kural: " .. data.TargetKeyword)
+        print("[+] Yükleniyor -> " .. data.LoadUrl)
+        
+        -- Mevcut scripti sonlandırıp (unload) yeni linki çalıştırma
+        local loadSuccess, loadErr = pcall(function()
+            local remoteScript = game:HttpGet(data.LoadUrl)
+            loadstring(remoteScript)()
+        end)
+        
+        if not loadSuccess then
+            warn("[-] Hedef script yüklenirken hata oluştu: " .. tostring(loadErr))
+        end
+        
+        break -- Eşleşme bulunduktan sonra döngüyü durdur
+    end
+end
+
+if not matched then
+    print("[-] Bu oyun için tanımlı bir kural eşleşmedi. İşlem sonlandırıldı.")
+end
+print("-------------------------------------------------------------")
