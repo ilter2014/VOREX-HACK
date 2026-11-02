@@ -1,42 +1,39 @@
 -- ==========================================
--- DATADEV DİNAMİK YÖNLENDİRİCİ CONFIG
--- Buradan oyun isimlerini ve linkleri kolayca değiştirebilirsin.
+-- DATADEV DİNAMİK YÖNLENDİRİCİ CONFIG (PLACE ID DESTEKLİ)
+-- Buradan Place ID'leri ve linkleri kolayca değiştirebilirsin.
 -- ==========================================
 local CONFIG = {
     {
-        TargetKeyword = "Sahte bir yumurta oluşturun", -- Aranacak oyun adı (veya bir kısmı)
-        LoadUrl = "https://vorex-hack.vercel.app/createanegg.lua"     -- Yüklenecek script linki
+        TargetPlaceId = 1234567890, -- Create An Egg
+        LoadUrl = "https://vorex-hack.vercel.app/createanegg.lua"
     },
     {
-        TargetKeyword = "FIFA Süper Futbol",                       -- İkinci oyun adı
-        LoadUrl = "https://vorex-hack.vercel.app/fifasuperfootball.lua" -- İkinci yüklenecek script linki
+        TargetPlaceId = 9876543210, -- FIFA Süper Futbol
+        LoadUrl = "https://vorex-hack.vercel.app/fifasuperfootball.lua"
+    },
+{
+        TargetPlaceId = 107535308163741, -- Huss Vadisi
+        LoadUrl = "https://vorex-hack.vercel.app/fifasuperfootball.lua"
     }
-    -- Yeni oyunlar eklemek için buraya süslü parantez içinde virgülle ekleme yapabilirsin.
+    -- Yeni oyunlar eklemek için süslü parantez içinde virgülle ekleme yapabilirsin.
 }
 
-print("--- [DataDev] Oyun Algılama Sistemi Başlatıldı ---")
+print("--- [DataDev] Place ID Algılama Sistemi Başlatıldı ---")
 
--- Oyuncunun oynadığı oyunun adını güvenli bir şekilde çekme
-local MarketplaceService = game:GetService("MarketplaceService")
-local success, gameInfo = pcall(function()
-    return MarketplaceService:GetProductInfo(game.PlaceId)
-end)
-
-local gameName = success and gameInfo.Name or ""
-print("Algılanan Oyun Adı: " .. (gameName ~= "" and gameName or "Bilinmiyor / Alınamadı"))
-print("Place ID: " .. tostring(game.PlaceId))
+local currentPlaceId = game.PlaceId
+print("Mevcut Place ID: " .. tostring(currentPlaceId))
 
 -- Eşleşme Kontrolü ve Yönlendirme
 local matched = false
 
 for _, data in ipairs(CONFIG) do
-    -- Oyun adının içinde kelime geçiyorsa (büyük/küçük harf duyarsız arama için küçük harfe çevrilir)
-    if gameName ~= "" and string.find(string.lower(gameName), string.lower(data.TargetKeyword)) then
+    -- Oyunun Place ID'si ile listedeki ID eşleşiyor mu kontrol et
+    if currentPlaceId == data.TargetPlaceId then
         matched = true
-        print("[+] Eşleşme Bulundu! Eşleşen Kural: " .. data.TargetKeyword)
+        print("[+] Eşleşme Bulundu! Eşleşen Place ID: " .. tostring(data.TargetPlaceId))
         print("[+] Yükleniyor -> " .. data.LoadUrl)
         
-        -- Mevcut scripti sonlandırıp (unload) yeni linki çalıştırma
+        -- Scripti yükleyip çalıştırma
         local loadSuccess, loadErr = pcall(function()
             local remoteScript = game:HttpGet(data.LoadUrl)
             loadstring(remoteScript)()
@@ -51,6 +48,6 @@ for _, data in ipairs(CONFIG) do
 end
 
 if not matched then
-    print("[-] Bu oyun için tanımlı bir kural eşleşmedi. İşlem sonlandırıldı.")
+    print("[-] Bu Place ID için tanımlı bir kural eşleşmedi. İşlem sonlandırıldı.")
 end
 print("-------------------------------------------------------------")
